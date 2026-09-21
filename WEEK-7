@@ -1,0 +1,106 @@
+const express = require("express");
+
+const app = express();
+const PORT = 3000;
+
+app.use(express.urlencoded({ extended: true }));
+
+// Home page
+app.get("/", (req, res) => {
+    res.send(`
+        <html>
+        <head>
+            <title>Week 7 - Server Side Rendering</title>
+        </head>
+        <body>
+            <h1>Server-Side Rendering</h1>
+
+            <h2>Student Details</h2>
+            <p>Name: Tejaswi</p>
+            <p>Course: Computer Science</p>
+            <p>Year: 2</p>
+
+            <hr>
+
+            <h2>Student Registration</h2>
+
+            <form action="/submit" method="POST">
+
+                <label>Name:</label>
+                <input type="text" name="name">
+                <br><br>
+
+                <label>Email:</label>
+                <input type="text" name="email">
+                <br><br>
+
+                <label>Age:</label>
+                <input type="number" name="age">
+                <br><br>
+
+                <button type="submit">Submit</button>
+
+            </form>
+        </body>
+        </html>
+    `);
+});
+
+// Accept form inputs and validate
+app.post("/submit", (req, res) => {
+
+    const { name, email, age } = req.body;
+
+    let errors = [];
+
+    if (!name || name.trim() === "") {
+        errors.push("Name is required");
+    }
+
+    if (!email || !email.includes("@")) {
+        errors.push("Enter a valid email");
+    }
+
+    if (!age || age < 18) {
+        errors.push("Age must be 18 or above");
+    }
+
+    if (errors.length > 0) {
+
+        res.send(`
+            <html>
+            <body>
+                <h1>Validation Errors</h1>
+
+                <ul>
+                    ${errors.map(error => `<li>${error}</li>`).join("")}
+                </ul>
+
+                <a href="/">Go Back</a>
+            </body>
+            </html>
+        `);
+
+    } else {
+
+        res.send(`
+            <html>
+            <body>
+                <h1>Registration Successful</h1>
+
+                <p>Name: ${name}</p>
+                <p>Email: ${email}</p>
+                <p>Age: ${age}</p>
+
+                <a href="/">Go Back</a>
+            </body>
+            </html>
+        `);
+    }
+});
+
+// Start server
+app.listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}`);
+});
+
